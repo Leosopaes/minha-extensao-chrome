@@ -1,0 +1,29 @@
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+      - uses: actions/checkout@v3
+
+      - name: Fazer login no GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Construir imagem Docker
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}:latest .
+
+      - name: Publicar imagem
+        run: |
+          docker push ghcr.io/${{ github.repository }}:latest
